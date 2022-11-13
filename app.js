@@ -38,16 +38,35 @@ client.on('ready', () => {
     console.log('Client is ready!');
 });
 
-client.on('message', async (message) => {
+client.on("message_create", async (message) => {
     console.log(message.body);
 
-    if (message.body === symbol + 'ping') {
-        message.reply('pong');
+    if (message.body === symbol + "ban" && message.fromMe) {
+        const chat = await message.getChat();
+
+        banlist.push((await (await message.getQuotedMessage()).getContact()).id);
+
+        await chat.sendMessage("User got banned!");
     }
-    if (message.body === '!wakeall') {
+
+    if (message.body === symbol + "unban" && message.fromMe) {
+        const chat = await message.getChat();
+
+        const user = (await (await message.getQuotedMessage()).getContact()).id;
+        const index = banlist.indexOf(user);
+        if(index > -1) {
+            banlist.splice(index,1);
+        }
+
+        await chat.sendMessage("User has been unbanned!");
+    }
+
+    const isbanned = banlist.includes((await message.getContact()).id);
+
+    if (message.body === symbol + 'wakeall' && !isbanned) {
         const authorId = message.author || message.from;
         const chat = await message.getChat();
-        const isSenderAdmin = false;
+        let isSenderAdmin = false;
         if (chat.isGroup) {
           for(let participant of chat.participants) {
               if(participant.id._serialized === authorId && participant.isAdmin) {
@@ -68,13 +87,16 @@ client.on('message', async (message) => {
             await chat.sendMessage(text, { mentions });
         }
     }
+})
 
-    if (message.body === symbol + "ban" && message.fromMe) {
-        const chat = await message.getChat();
+client.on('message', async (message) => {
+    // console.log(message.body);
 
-        banlist.push((await (await message.getQuotedMessage()).getContact()).id);
+    const isbanned = banlist.includes((await message.getContact()).id);
 
-        await chat.sendMessage("User got banned!");
+    if (message.body === symbol + 'ping' && !isbanned) {
+        message.reply('pong');
     }
+  
 });
 
