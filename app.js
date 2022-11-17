@@ -42,8 +42,6 @@ client.on('ready', () => {
 });
 
 client.on("message_create", async (message) => {
-    console.log(message.body);
-
     if (message.body === symbol + "ban" && message.fromMe) {
         const chat = await message.getChat();
 
@@ -93,8 +91,7 @@ client.on("message_create", async (message) => {
 })
 
 client.on('message', async (message) => {
-    // console.log(message.body);
-
+    
     const isbanned = banlist.includes((await message.getContact()).id);
 
     if (message.body === symbol + 'ping' && !isbanned) {
