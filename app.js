@@ -2,7 +2,10 @@ const qrcode = require('qrcode-terminal');
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        args: ['--no-sandbox'],
+    }
 });
 
 client.initialize();
@@ -54,8 +57,8 @@ client.on("message_create", async (message) => {
 
         const user = (await (await message.getQuotedMessage()).getContact()).id;
         const index = banlist.indexOf(user);
-        if(index > -1) {
-            banlist.splice(index,1);
+        if (index > -1) {
+            banlist.splice(index, 1);
         }
 
         await chat.sendMessage("User has been unbanned!");
@@ -63,19 +66,19 @@ client.on("message_create", async (message) => {
 
     const isbanned = banlist.includes((await message.getContact()).id);
 
-    if (message.body === symbol + 'wakeall' && !isbanned) {
+    if (message.body === symbol + 'announce' && !isbanned) {
         const authorId = message.author || message.from;
         const chat = await message.getChat();
         let isSenderAdmin = false;
         if (chat.isGroup) {
-          for(let participant of chat.participants) {
-              if(participant.id._serialized === authorId && participant.isAdmin) {
-                isSenderAdmin = true;
-              }
-          }
+            for (let participant of chat.participants) {
+                if (participant.id._serialized === authorId && participant.isAdmin) {
+                    isSenderAdmin = true;
+                }
+            }
         }
         if (chat.isGroup && isSenderAdmin) {
-            let text = "Shh!! Its an announcement!!";
+            let text = "announcement!!";
             let mentions = [];
 
             for (let participant of chat.participants) {
@@ -97,6 +100,6 @@ client.on('message', async (message) => {
     if (message.body === symbol + 'ping' && !isbanned) {
         message.reply('pong');
     }
-  
+
 });
 
