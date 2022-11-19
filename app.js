@@ -44,24 +44,32 @@ client.on("ready", () => {
 client.on("message_create", async (message) => {
     if (message.body === symbol + "ban" && message.fromMe) {
         const chat = await message.getChat();
-        const id =  await message.getQuotedMessage().author;
-        banlist.push(id);
-
-        await chat.sendMessage("User got banned!");
+        let id = "";
+        try {
+            id = (await message.getQuotedMessage()).author;
+            banlist.push(id);
+            await chat.sendMessage("User got banned!");
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     if (message.body === symbol + "unban" && message.fromMe) {
         const chat = await message.getChat();
 
-        const id = await message.getQuotedMessage().author;
-        const index = banlist.indexOf(id);
-        if (index > -1) {
-            banlist.splice(index, 1);
-        }
-
-        await chat.sendMessage("User has been unbanned!");
-    }
+        try {
+            const id = (await message.getQuotedMessage()).author;
+            const index = banlist.indexOf(id);
+            if (index > -1) {
+                banlist.splice(index, 1);
+            }
     
+            await chat.sendMessage("User has been unbanned!");
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     const id = message.author;
     const isbanned = banlist.includes(id);
     if (message.body === symbol + "announce" && !isbanned) {
