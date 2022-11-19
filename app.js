@@ -1,11 +1,11 @@
-const qrcode = require('qrcode-terminal');
+const qrcode = require("qrcode-terminal");
 
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth } = require("whatsapp-web.js");
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        args: ['--no-sandbox'],
-    }
+        args: ["--no-sandbox"],
+    },
 });
 
 client.initialize();
@@ -20,32 +20,32 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 
 var symbol = process.env.SYMBOL;
 
-client.on('loading_screen', (percent, message) => {
-    console.log('LOADING SCREEN', percent, message);
+client.on("loading_screen", (percent, message) => {
+    console.log("LOADING SCREEN", percent, message);
 });
 
-client.on('qr', qr => {
+client.on("qr", (qr) => {
     qrcode.generate(qr, { small: true });
 });
 
-client.on('authenticated', () => {
-    console.log('AUTHENTICATED');
+client.on("authenticated", () => {
+    console.log("AUTHENTICATED");
 });
 
-client.on('auth_failure', msg => {
+client.on("auth_failure", (msg) => {
     // Fired if session restore was unsuccessful
-    console.error('AUTHENTICATION FAILURE', msg);
+    console.error("AUTHENTICATION FAILURE", msg);
 });
 
-client.on('ready', () => {
-    console.log('Client is ready!');
+client.on("ready", () => {
+    console.log("Client is ready!");
 });
 
 client.on("message_create", async (message) => {
     if (message.body === symbol + "ban" && message.fromMe) {
         const chat = await message.getChat();
-
-        banlist.push((await (await message.getQuotedMessage()).getContact()).id);
+        const id =  await message.getQuotedMessage().author;
+        banlist.push(id);
 
         await chat.sendMessage("User got banned!");
     }
@@ -53,18 +53,18 @@ client.on("message_create", async (message) => {
     if (message.body === symbol + "unban" && message.fromMe) {
         const chat = await message.getChat();
 
-        const user = (await (await message.getQuotedMessage()).getContact()).id;
-        const index = banlist.indexOf(user);
+        const id = await message.getQuotedMessage().author;
+        const index = banlist.indexOf(id);
         if (index > -1) {
             banlist.splice(index, 1);
         }
 
         await chat.sendMessage("User has been unbanned!");
     }
-
-    const isbanned = banlist.includes((await message.getContact()).id);
-
-    if (message.body === symbol + 'announce' && !isbanned) {
+    
+    const id = message.author;
+    const isbanned = banlist.includes(id);
+    if (message.body === symbol + "announce" && !isbanned) {
         const authorId = message.author || message.from;
         const chat = await message.getChat();
         let isSenderAdmin = false;
@@ -76,7 +76,7 @@ client.on("message_create", async (message) => {
             }
         }
         if (chat.isGroup && isSenderAdmin) {
-            let text = "announcement!!";
+            let text = "❗❗";
             let mentions = [];
 
             for (let participant of chat.participants) {
@@ -88,15 +88,13 @@ client.on("message_create", async (message) => {
             await chat.sendMessage(text, { mentions });
         }
     }
-})
-
-client.on('message', async (message) => {
-    
-    const isbanned = banlist.includes((await message.getContact()).id);
-
-    if (message.body === symbol + 'ping' && !isbanned) {
-        message.reply('pong');
-    }
-
 });
 
+client.on("message", async (message) => {
+    const id = message.author;
+    const isbanned = banlist.includes(id);
+
+    if (message.body === symbol + "ping" && !isbanned) {
+        message.reply("pong");
+    }
+});
