@@ -5,6 +5,7 @@ based on whatsapp-web.js
 https://github.com/pedroslopez/whatsapp-web.js
 
 #commands supports:
+
 ==> !ping  :  pong
 
 ==> !announce  :  mentions all members
