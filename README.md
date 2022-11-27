@@ -13,3 +13,16 @@ https://github.com/pedroslopez/whatsapp-web.js
 ==> !ban  :  for spam control --owner only
 
 ==> !unban  :  for spam control --owner only
+
+
+#todo:
+
+==> add database
+
+==> shorten links
+
+==> qr code generator
+
+==> words api
+
+==> market api
