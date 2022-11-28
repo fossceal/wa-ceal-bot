@@ -2,7 +2,7 @@
 a simple bot to take levarage of whatsapp api for everyday tasks
 
 based on whatsapp-web.js
-https://github.com/pedroslopez/whatsapp-web.js (Read through their documentation to contribute)
+https://github.com/pedroslopez/whatsapp-web.js
 
 Follow this guide to understand and further contribute to the repo
 
