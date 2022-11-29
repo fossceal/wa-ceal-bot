@@ -1,16 +1,8 @@
-const qrcode = require("qrcode-terminal");
+const {announce} = require('./commands/announce');
+const client = require('./config/client');
 
-const { Client, LocalAuth } = require("whatsapp-web.js");
-const client = new Client({
-    authStrategy: new LocalAuth(),
-    puppeteer: {
-        args: ["--no-sandbox"],
-    },
-});
-
-client.initialize();
-
-const banlist = [];
+//TODO: convert to db
+const banlist = []; 
 
 if (process.env.NODE_ENV !== "PRODUCTION") {
     require("dotenv").config({
@@ -20,28 +12,10 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 
 var symbol = process.env.SYMBOL;
 
-client.on("loading_screen", (percent, message) => {
-    console.log("LOADING SCREEN", percent, message);
-});
-
-client.on("qr", (qr) => {
-    qrcode.generate(qr, { small: true });
-});
-
-client.on("authenticated", () => {
-    console.log("AUTHENTICATED");
-});
-
-client.on("auth_failure", (msg) => {
-    // Fired if session restore was unsuccessful
-    console.error("AUTHENTICATION FAILURE", msg);
-});
-
-client.on("ready", () => {
-    console.log("Client is ready!");
-});
-
+// listens to the messages of owner as well as others
 client.on("message_create", async (message) => {
+
+    //ban
     if (message.body === symbol + "ban" && message.fromMe) {
         const chat = await message.getChat();
         let id = "";
@@ -54,6 +28,7 @@ client.on("message_create", async (message) => {
         }
     }
 
+    //unban
     if (message.body === symbol + "unban" && message.fromMe) {
         const chat = await message.getChat();
 
@@ -72,36 +47,20 @@ client.on("message_create", async (message) => {
 
     const id = message.author;
     const isbanned = banlist.includes(id);
+    
+    //announce
     if (message.body === symbol + "announce" && !isbanned) {
-        const authorId = message.author || message.from;
-        const chat = await message.getChat();
-        let isSenderAdmin = false;
-        if (chat.isGroup) {
-            for (let participant of chat.participants) {
-                if (participant.id._serialized === authorId && participant.isAdmin) {
-                    isSenderAdmin = true;
-                }
-            }
-        }
-        if (chat.isGroup && isSenderAdmin) {
-            let text = "❗❗";
-            let mentions = [];
-
-            for (let participant of chat.participants) {
-                const contact = await client.getContactById(participant.id._serialized);
-
-                mentions.push(contact);
-                // text += `@${participant.id.user} `;
-            }
-            await chat.sendMessage(text, { mentions });
-        }
+       announce(message);
     }
 });
 
+
+//listens to others messages only
 client.on("message", async (message) => {
     const id = message.author;
     const isbanned = banlist.includes(id);
 
+    //ping
     if (message.body === symbol + "ping" && !isbanned) {
         message.reply("pong");
     }
