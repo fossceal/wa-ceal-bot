@@ -1,6 +1,6 @@
 const client = require("../config/client");
 
-exports.announce = async (message) => {
+exports.announce = async (message,messageBody) => {
     const authorId = message.author || message.from;
     const chat = await message.getChat();
     let isSenderAdmin = false;
@@ -12,7 +12,7 @@ exports.announce = async (message) => {
         }
     }
     if (chat.isGroup && isSenderAdmin) {
-        let text = "❗❗";
+        let text = (messageBody === "")?  "❗❗" : `*${messageBody}*`;
         let mentions = [];
 
         for (let participant of chat.participants) {

@@ -15,21 +15,31 @@ var symbol = process.env.SYMBOL;
 // listens to the messages of owner as well as others
 client.on("message_create", async (message) => {
 
+    const splitedMessage = message.body.split(" ");
+    const command = splitedMessage[0];
+    const messageBodyArray = [];
+
+    for (var i = 1; i < splitedMessage.length; i++) {
+        messageBodyArray.push(splitedMessage[i]);
+    }
+
+    const messageBody = messageBodyArray.join(" ");
+
     //ban
-    if (message.body === symbol + "ban" && message.fromMe) {
+    if (command === symbol + "ban" && message.fromMe) {
         const chat = await message.getChat();
         let id = "";
         try {
             id = (await message.getQuotedMessage()).author;
             banlist.push(id);
-            await chat.sendMessage("User got banned!");
+            await chat.sendMessage(`*User got banned!*`);
         } catch (e) {
             console.log(e);
         }
     }
 
     //unban
-    if (message.body === symbol + "unban" && message.fromMe) {
+    if (command === symbol + "unban" && message.fromMe) {
         const chat = await message.getChat();
 
         try {
@@ -39,7 +49,7 @@ client.on("message_create", async (message) => {
                 banlist.splice(index, 1);
             }
     
-            await chat.sendMessage("User has been unbanned!");
+            await chat.sendMessage(`*User has been unbanned!*`);
         } catch (e) {
             console.log(e);
         }
@@ -49,9 +59,10 @@ client.on("message_create", async (message) => {
     const isbanned = banlist.includes(id);
     
     //announce
-    if (message.body === symbol + "announce" && !isbanned) {
-       announce(message);
+    if (command === symbol + "announce" && !isbanned) {
+       announce(message,messageBody);
     }
+
 });
 
 
