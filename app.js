@@ -1,14 +1,15 @@
-const {announce} = require('./commands/announce');
-const client = require('./config/client');
-
-//TODO: convert to db
-const banlist = []; 
-
 if (process.env.NODE_ENV !== "PRODUCTION") {
     require("dotenv").config({
         path: __dirname + "/.env",
     });
 }
+
+const {announce} = require('./commands/announce');
+const client = require('./config/client');
+const openai = require("./config/open_ai");
+
+//TODO: convert to db
+const banlist = []; 
 
 var symbol = process.env.SYMBOL;
 
@@ -62,7 +63,6 @@ client.on("message_create", async (message) => {
     if (command === symbol + "announce" && !isbanned) {
        announce(message,messageBody);
     }
-
 });
 
 
@@ -71,8 +71,34 @@ client.on("message", async (message) => {
     const id = message.author;
     const isbanned = banlist.includes(id);
 
+    const splitedMessage = message.body.split(" ");
+    const command = splitedMessage[0];
+    const messageBodyArray = [];
+
+    for (var i = 1; i < splitedMessage.length; i++) {
+        messageBodyArray.push(splitedMessage[i]);
+    }
+
+    const messageBody = messageBodyArray.join(" ");
+
     //ping
-    if (message.body === symbol + "ping" && !isbanned) {
+    if (command === symbol + "ping" && !isbanned) {
         message.reply("pong");
+    }
+
+    //open ai chat bot
+    if (command === symbol + "chat" && !isbanned) {   
+        const chat = await message.getChat();     
+        const response = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: messageBody,
+            temperature: 0.9,
+            max_tokens: 150,
+            top_p: 1,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.6,
+            stop: [" Human:", " AI:"],
+          });
+        await chat.sendMessage(response.data.choices[0].text);
     }
 });
