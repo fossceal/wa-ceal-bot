@@ -31,3 +31,5 @@ https://wwebjs.dev/guide/#installation
 ==> words api
 
 ==> market api
+
+==> filtered ktu notifications
