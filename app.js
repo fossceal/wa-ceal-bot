@@ -6,7 +6,7 @@ const banlist = [];
 
 if (process.env.NODE_ENV !== "PRODUCTION") {
     require("dotenv").config({
-        path: __dirname + "/config/.env",
+        path: __dirname + "/.env",
     });
 }
 
