@@ -19,6 +19,7 @@ https://wwebjs.dev/guide/#installation
 
 ==> !unban  :  for spam control --owner only
 
+==> !chat  :  for chatting with with bot (powered by open ai da vinci model)
 
 #todo:
 
