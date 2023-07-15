@@ -15,7 +15,7 @@ const prompts = [
 ];
 
 exports.processPrompt = async (message) => {
-    let processedPrompt = message.toLowerCase();
+    let processedPrompt = message.toString().toLowerCase();
     processedPrompt = message.charAt(message.length-1) !== '?' ? processedPrompt + '?' : processedPrompt;
 
     if (prompts.includes(processedPrompt)) {
