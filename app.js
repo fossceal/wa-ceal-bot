@@ -4,12 +4,13 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
     });
 }
 
-const {announce} = require('./commands/announce');
+const { announce } = require('./commands/announce');
 const client = require('./config/client');
 const openai = require("./config/open_ai");
+const processPrompt = require("./utils/processed_prompt_for_gtp");
 
 //TODO: convert to db
-const banlist = []; 
+const banlist = [];
 
 var symbol = process.env.SYMBOL;
 
@@ -49,7 +50,7 @@ client.on("message_create", async (message) => {
             if (index > -1) {
                 banlist.splice(index, 1);
             }
-    
+
             await chat.sendMessage(`*User has been unbanned!*`);
         } catch (e) {
             console.log(e);
@@ -58,10 +59,10 @@ client.on("message_create", async (message) => {
 
     const id = message.author;
     const isbanned = banlist.includes(id);
-    
+
     //announce
     if (command === symbol + "announce" && !isbanned) {
-       announce(message,messageBody);
+        announce(message, messageBody);
     }
 });
 
@@ -87,18 +88,24 @@ client.on("message", async (message) => {
     }
 
     //open ai chat bot
-    if (command === symbol + "chat" && !isbanned) {   
-        const chat = await message.getChat();     
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: messageBody,
-            temperature: 0.9,
-            max_tokens: 150,
-            top_p: 1,
-            frequency_penalty: 0.0,
-            presence_penalty: 0.6,
-            stop: [" Human:", " AI:"],
-          });
-        await chat.sendMessage(response.data.choices[0].text);
+    if (command === symbol + "chat" && !isbanned) {
+        const chat = await message.getChat();
+
+        const proccessedPrompt = await processPrompt(message);
+        if (processPrompt !== null) {
+            await chat.sendMessage(proccessedPrompt);
+        } else {
+            const response = await openai.createCompletion({
+                model: "text-davinci-003",
+                prompt: messageBody,
+                temperature: 0.9,
+                max_tokens: 150,
+                top_p: 1,
+                frequency_penalty: 0.0,
+                presence_penalty: 0.6,
+                stop: [" Human:", " AI:"],
+            });
+            await chat.sendMessage(response.data.choices[0].text);
+        }
     }
 });
