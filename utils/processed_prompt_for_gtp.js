@@ -15,8 +15,9 @@ const prompts = [
 ];
 
 exports.processPrompt = async (message) => {
-    let processedPrompt = message.toString().toLowerCase();
-    processedPrompt = message.charAt(message.length-1) !== '?' ? processedPrompt + '?' : processedPrompt;
+    let msg = message.toString();
+    let processedPrompt = msg.toLowerCase();
+    processedPrompt = msg.charAt(msg.length-1) !== '?' ? processedPrompt + '?' : processedPrompt;
 
     if (prompts.includes(processedPrompt)) {
         return "\n\nI was developed by the team at Foss Ceal to serve students and faculties under College of Engineering Attingal 😊\nIf you really like my existence,then feel free to contribute to my source code so that i can serve you better\ngithub: https://github.com/FOSS-CEAL/wa-ceal-bot"
