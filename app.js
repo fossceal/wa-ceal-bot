@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 const { announce } = require('./commands/announce');
 const client = require('./config/client');
 const openai = require("./config/open_ai");
-const processPrompt = require("./utils/processed_prompt_for_gtp");
+const {processPrompt} = require("./utils/processed_prompt_for_gtp");
 
 //TODO: convert to db
 const banlist = [];
