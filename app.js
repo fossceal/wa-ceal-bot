@@ -90,9 +90,8 @@ client.on("message", async (message) => {
     //open ai chat bot
     if (command === symbol + "chat" && !isbanned) {
         const chat = await message.getChat();
-
-        const proccessedPrompt = await processPrompt(message);
-        if (processPrompt !== null) {
+        const proccessedPrompt = await processPrompt(messageBody);
+        if (proccessedPrompt !== null) {
             await chat.sendMessage(proccessedPrompt);
         } else {
             const response = await openai.createCompletion({
