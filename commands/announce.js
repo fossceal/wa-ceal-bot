@@ -1,8 +1,9 @@
 const client = require("../config/client");
 
-exports.announce = async (message,messageBody) => {
+exports.announce = async (message, messageBody) => {
     const authorId = message.author || message.from;
     const chat = await message.getChat();
+
     let isSenderAdmin = false;
     if (chat.isGroup) {
         for (let participant of chat.participants) {
@@ -12,14 +13,12 @@ exports.announce = async (message,messageBody) => {
         }
     }
     if (chat.isGroup && isSenderAdmin) {
-        let text = (messageBody === "")?  "❗❗" : `*${messageBody}*`;
+        let text = (messageBody === "") ? `*${chat.name} got tagged!!*` : `*${messageBody}*`;
         let mentions = [];
 
         for (let participant of chat.participants) {
-            const contact = await client.getContactById(participant.id._serialized);
-
+            const contact = (await client.getContactById(participant.id._serialized)).id._serialized;
             mentions.push(contact);
-            // text += `@${participant.id.user} `;
         }
         await chat.sendMessage(text, { mentions });
     }
