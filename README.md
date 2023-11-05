@@ -21,11 +21,11 @@ https://wwebjs.dev/guide/#installation
 
 ==> !chat  :  for chatting with with bot (powered by open ai da vinci model)
 
+==> !shorten : shortens long links using tinyurl api (you need to provide alias)
+
 #todo:
 
 ==> add database
-
-==> shorten links
 
 ==> qr code generator
 

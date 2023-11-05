@@ -34,7 +34,7 @@ exports.shorten = async (message, messageBody) => {
     try {
         const response = await axios.post("https://api.tinyurl.com/create", data, config);
         var jsonData = response.data.data;
-        await chat.sendMessage(`Here is the shorten Link info: *${jsonData["tiny_url"]}*`);
+        await chat.sendMessage(`Here is the Shorten Link: *${jsonData["tiny_url"]}*`);
     } catch (e) {
         await chat.sendMessage(`*${e.response.data.errors[0]}*`);
     }

@@ -5,6 +5,7 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 }
 
 const { announce } = require('./commands/announce');
+const { info } = require("./commands/info");
 const { shorten } = require("./commands/shorten");
 const client = require('./config/client');
 const openai = require("./config/open_ai");
@@ -69,6 +70,11 @@ client.on("message_create", async (message) => {
     //shorten link
     if (command === symbol + "shorten" && !isbanned) {
         shorten(message, messageBody);
+    }
+
+    //info
+    if (command === symbol + "info" && !isbanned) {
+        info(message);
     }
 });
 
