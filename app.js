@@ -6,6 +6,7 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 
 const { announce } = require('./commands/announce');
 const { info } = require("./commands/info");
+const { qrCode } = require("./commands/qrCode");
 const { shorten } = require("./commands/shorten");
 const client = require('./config/client');
 const openai = require("./config/open_ai");
@@ -76,6 +77,11 @@ client.on("message_create", async (message) => {
     if (command === symbol + "info" && !isbanned) {
         info(message);
     }
+
+    // //qr code generation
+    // if (command === symbol + "qr" && !isbanned) {
+    //     qrCode(message,messageBody);
+    // }
 });
 
 
